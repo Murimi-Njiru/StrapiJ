@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>co.ke.tsunairo</groupId>
-    <artifactId>strapiJ</artifactId>
+    <artifactId>strapij</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <developers>
