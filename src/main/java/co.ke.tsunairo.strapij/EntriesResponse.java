@@ -11,7 +11,7 @@ import java.util.Map;
 
 public @Data class EntriesResponse
 {
-	private List<StrapiData> data;
+	private List<Map<String, Object>> data;
 	private Map<String, Object> meta;
-	private StrapiError error;
+	private Map<String, Object> error;
 }
