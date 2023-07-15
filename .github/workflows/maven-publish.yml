@@ -29,6 +29,6 @@ jobs:
       run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }}"
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml "-Drelease.version=${{  github.ref_name }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
