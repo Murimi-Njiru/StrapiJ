@@ -10,7 +10,7 @@ import java.util.Map;
 
 public @Data class EntryResponse
 {
-	private StrapiData strapiData;
+	private Map<String, Object> data;
 	private Map<String, Object> meta;
-	private StrapiError strapiError;
+	private Map<String, Object> error;
 }
