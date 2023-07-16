@@ -20,8 +20,7 @@
         <repository>
             <id>${repository.id}</id>
             <name>strapij</name>
-            <!--suppress UnresolvedMavenProperty -->
-            <url>${repository.url}</url>
+            <url>https://maven.pkg.github.com/Murimi-Njiru/StrapiJ</url>
         </repository>
     </distributionManagement>
 
