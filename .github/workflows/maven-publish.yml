@@ -26,25 +26,9 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven Github Package
-      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} -Drepository.id=github"
+      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }}"
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml "-Drelease.version=${{  github.ref_name }} -Drepository.id=github"
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml "-Drelease.version=${{  github.ref_name }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Set up JDK 17 for publishing to Maven Central Repository
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        server-id: ossrh
-        server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD
-    - name: Build with Maven Maven Package
-      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} -Drepository.id=ossrh"
-    - name: Publish to the Maven Central Repository
-      run: mvn --batch-mode deploy "-Drelease.version=${{  github.ref_name }} -Drepository.id=ossrh"
-      env:
-        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

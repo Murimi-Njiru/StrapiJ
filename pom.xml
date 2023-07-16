@@ -17,18 +17,13 @@
             <email>muriminjiru@hotmail.com</email>
         </developer>
     </developers>
-    <repositories>
+    <distributionManagement>
         <repository>
             <id>github</id>
-            <name>StrapiJ</name>
+            <name>strapij</name>
             <url>https://maven.pkg.github.com/Murimi-Njiru/StrapiJ</url>
         </repository>
-        <repository>
-            <id>ossrh</id>
-            <name>StrapiJ</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </repositories>
+    </distributionManagement>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
