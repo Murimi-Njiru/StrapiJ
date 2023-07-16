@@ -8,7 +8,8 @@
     <artifactId>strapij</artifactId>
     <version>${release.version}</version>
     <packaging>jar</packaging>
-    <description>This is a Java Library that provides simple tools to interact with a Strapi REST API</description>
+    <description>This is a Java Library that provides simple tools to interact with Strapi REST API </description>
+
     <developers>
         <developer>
             <id>murimiNjiru</id>
@@ -16,13 +17,18 @@
             <email>muriminjiru@hotmail.com</email>
         </developer>
     </developers>
-    <distributionManagement>
+    <repositories>
         <repository>
-            <id>${repository.id}</id>
-            <name>strapij</name>
+            <id>github</id>
+            <name>StrapiJ</name>
             <url>https://maven.pkg.github.com/Murimi-Njiru/StrapiJ</url>
         </repository>
-    </distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <name>StrapiJ</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </repositories>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
