@@ -26,7 +26,7 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven Github Package
-      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} release.repository.id=github release.repository.url=https://maven.pkg.github.com/Murimi-Njiru/StrapiJ"
+      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} -Drelease.repository.id=github -Drelease.repository.url=https://maven.pkg.github.com/Murimi-Njiru/StrapiJ"
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml "-Drelease.version=${{  github.ref_name }}"
@@ -42,7 +42,7 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
     - name: Build with Maven Maven Package
-      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} release.repository.id=ossrh release.repository.url=https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} -Drelease.repository.id=ossrh -Drelease.repository.url=https://oss.sonatype.org/service/local/staging/deploy/maven2/"
     - name: Publish to the Maven Central Repository
       run: mvn --batch-mode deploy "-Drelease.version=${{  github.ref_name }}"
       env:

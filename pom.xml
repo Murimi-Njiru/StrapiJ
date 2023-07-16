@@ -19,7 +19,7 @@
     <distributionManagement>
         <repository>
             <id>${release.repository.id}</id>
-            <name>StrapiJ</name>
+            <name>strapij</name>
             <!--suppress UnresolvedMavenProperty -->
             <url>${release.repository.url}</url>
         </repository>
