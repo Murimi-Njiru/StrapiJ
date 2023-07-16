@@ -8,7 +8,7 @@
     <artifactId>strapij</artifactId>
     <version>${release.version}</version>
     <packaging>jar</packaging>
-
+    <description>This is a Java Library that provides simple tools to interact with a Strapi REST API</description>
     <developers>
         <developer>
             <id>murimiNjiru</id>
@@ -18,9 +18,10 @@
     </developers>
     <distributionManagement>
         <repository>
-            <id>github</id>
+            <id>${release.repository.id}</id>
             <name>StrapiJ</name>
-            <url>https://maven.pkg.github.com/Murimi-Njiru/StrapiJ</url>
+            <!--suppress UnresolvedMavenProperty -->
+            <url>${release.repository.url}</url>
         </repository>
     </distributionManagement>
 

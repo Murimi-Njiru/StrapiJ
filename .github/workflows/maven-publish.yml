@@ -17,18 +17,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK 17 for publishing to GitHub Packages
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        server-id: ${{ GITHUB_PACKAGES_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Build with Maven
-      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }}"
+    - name: Build with Maven Github Package
+      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} release.repository.id=${{  GITHUB_PACKAGES_ID }} release.repository.url=${{  GITHUB_PACKAGES_URL }}"
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml "-Drelease.version=${{  github.ref_name }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Set up JDK 17 for publishing to Maven Central Repository
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        server-id: ${{ MAVEN_PACKAGES_ID }}
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
+    - name: Build with Maven Maven Package
+      run: mvn clean package spring-boot:repackage "-Drelease.version=${{  github.ref_name }} release.repository.id=${{ MAVEN_PACKAGES_ID }} release.repository.url=${{  MAVEN_PACKAGES_URL }}"
+    - name: Publish to the Maven Central Repository
+      run: mvn --batch-mode deploy "-Drelease.version=${{  github.ref_name }}"
+      env:
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
