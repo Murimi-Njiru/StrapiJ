@@ -18,10 +18,10 @@
     </developers>
     <distributionManagement>
         <repository>
-            <id>${release.repository.id}</id>
+            <id>${repository.id}</id>
             <name>strapij</name>
             <!--suppress UnresolvedMavenProperty -->
-            <url>${release.repository.url}</url>
+            <url>${repository.url}</url>
         </repository>
     </distributionManagement>
 
