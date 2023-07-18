@@ -1,6 +1,9 @@
 package co.ke.tsunairo.strapij.parsers;
 
 import co.ke.tsunairo.strapij.annotations.AnnotationProcessor;
+import co.ke.tsunairo.strapij.beans.Data;
+import co.ke.tsunairo.strapij.beans.Entries;
+import co.ke.tsunairo.strapij.beans.Entry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -18,66 +21,72 @@ import java.util.stream.Collectors;
  */
 
 public class Parser<Type> {
-	private Class<Type> clazz;
+	private final Class<Type> clazz;
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private AnnotationProcessor annotationProcessor =new AnnotationProcessor();
+	private final AnnotationProcessor annotationProcessor =new AnnotationProcessor();
 
 	public Parser(Class<Type> clazz) {
 		this.clazz = clazz;
 	}
 
 	private <FieldClass> FieldClass parseField(Object value, Field field) throws Exception {
-		String fieldType = annotationProcessor.getField(field);
-
-		switch(fieldType.toLowerCase()) {
-			case "media":
-
-			case "component":
-				return parseComponent(value, field);
-			case "dynamic_zone":
-				return parseDynamicZone(value, field);
-			case "relation":
-				return parseRelation(value, field);
-			default:
-				return (FieldClass) value;
+		if(annotationProcessor.getField(field) != null && value != null) {
+			return switch (annotationProcessor.getField(field)) {
+				case MEDIA, COMPONENT -> parseComponent(value, field);
+				case DYNAMIC_ZONE -> parseDynamicZone(value, field);
+				case RELATION_MANY -> parseRelation(value, field);
+				case RELATION_ONE -> parseSingleRelation(value, field);
+				case NONE -> (FieldClass) value;
+			};
+		}
+		else  {
+			return (FieldClass) value;
 		}
 	}
 
 	private <Component> Component parseComponent(Object value, Field field) throws Exception {
-		if(annotationProcessor.getEntry(field).toLowerCase().equals("single")) {
-			Map<String, Object> component = (Map<String, Object>) value;
-			return (Component) mapComponent(component, annotationProcessor.getMapper(field));
-		}
-		else {
-			List<Map<String, Object>> components = (List<Map<String, Object>>) value;
+		switch (annotationProcessor.getEntry(field)) {
+			case LIST -> {
+				List<Map<String, Object>> components = (List<Map<String, Object>>) value;
 
-			return (Component) components.stream().map(component -> {
-				try {
-					return mapComponent(component, annotationProcessor.getMapper(field));
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-				return null;
-			});
-
+				return (Component) components.stream().map(component -> {
+					try {
+						return mapComponent(component, annotationProcessor.getMapper(field));
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
+					return null;
+				});
+			}
+			case SINGLE -> {
+				Map<String, Object> component = (Map<String, Object>) value;
+				return (Component) mapComponent(component, annotationProcessor.getMapper(field));
+			}
+			case NONE -> {
+				return (Component) value;
+			}
+			default -> throw new IllegalStateException("Unexpected value: " + annotationProcessor.getEntry(field));
 		}
 	}
 	private <DynamicZone> DynamicZone parseDynamicZone(Object value, Field field) throws Exception {
 		List<Map<String, Object>> components = (List<Map<String, Object>>) value;
 
-		if(annotationProcessor.getEntry(field).toLowerCase().equals("single")) {
-
-			return (DynamicZone) mapComponent(components.get(0), annotationProcessor.getMapper(field));
-		}
-
-		return (DynamicZone) components.stream().map(component -> {
-			try {
-				return mapComponent(component,  annotationProcessor.getMapper(field));
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+		switch (annotationProcessor.getEntry(field)) {
+			case LIST -> {
+				return (DynamicZone) components.stream().map(component -> {
+					try {
+						return mapComponent(component,  annotationProcessor.getMapper(field));
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
+					return null;
+				});
 			}
-			return null;
-		});
+			case SINGLE -> {
+				return (DynamicZone) mapComponent(components.get(0), annotationProcessor.getMapper(field));
+			}
+		}
+		return null;
 	}
 
 	private String getClassName(ParameterizedType pType) {
@@ -91,10 +100,10 @@ public class Parser<Type> {
 		}
 	}
 
-	private Class getFieldParameter(Field field) {
+	private Class<?> getFieldParameterizedClass(Field field) {
 		java.lang.reflect.Type type = field.getGenericType();
 
-		Class parameterClass = null;
+		Class<?> parameterClass = null;
 		if (type instanceof ParameterizedType pType) {
 			try {
 				parameterClass = Class.forName(getClassName(pType));
@@ -105,30 +114,53 @@ public class Parser<Type> {
 
 		return parameterClass;
 	}
-	private <Relation> Relation parseRelation(Object value, Field field) throws Exception {
-		if(annotationProcessor.getEntry(field).toLowerCase().equals("single")) {
-			Map<String, Object> valueMap = (Map<String, Object>) value;
-			Map<Object, Object> data = (Map<Object, Object>) valueMap.get("data");
-			return (Relation) parseAttributes((Map<String, Object>) data.get("attributes"), "1", field.getClass());
-		}
-		else {
-			Map<String, Object> valueMap = (Map<String, Object>) value;
-			List<Map<Object, Object>> data = (List<Map<Object, Object>>) valueMap.get("data");
-			return (Relation) data.stream().map(datum -> {
-				try {
-					return parseAttributes((Map<String, Object>) datum.get("attributes"), "1", getFieldParameter(field));
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}).collect(Collectors.toList());
-		}
+
+	private <Relation> Relation parseSingleRelation(Object value, Field field) throws JsonProcessingException {
+		Map<String, Object> valueMap = (Map<String, Object>) value;
+		Map<Object, Object> data = (Map<Object, Object>) valueMap.get("data");
+
+		return (Relation) parseAttributes((Map<String, Object>) data.get("attributes"), field.getType());
 	}
+
+	private <Relation> Relation parseListRelation(Object value, Field field) throws JsonProcessingException {
+		Map<String, Object> valueMap = (Map<String, Object>) value;
+		List<Map<Object, Object>> data = (List<Map<Object, Object>>) valueMap.get("data");
+
+		return (Relation) data.stream().map(datum -> {
+			try {
+				return parseAttributes((Map<String, Object>) datum.get("attributes"), getFieldParameterizedClass(field));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}).collect(Collectors.toList());
+	}
+
+ 	private <Relation> Relation parseRelation(Object value, Field field) throws Exception {
+	    if (value != null) {
+			switch (annotationProcessor.getEntry(field)) {
+				case SINGLE -> {
+					return parseSingleRelation(value, field);
+				}
+				case LIST -> {
+					return parseListRelation(value, field);
+				}
+				case NONE -> {
+					return (Relation) value;
+				}
+			}
+	    }
+		else {
+			return null;
+	    }
+	    return null;
+    }
 
 	private Object mapComponent(Map<String, Object> component, Class mapper) throws JsonProcessingException {
 		String [] unwantedKeys = {"id", "__component"};
 		Arrays.stream(unwantedKeys).forEach(component::remove);
 		Map<String, Object> parsedComponent = new HashMap<>();
+
 		component.forEach((key, value) -> {
 			try {
 				if(mapper != null) {
@@ -145,19 +177,17 @@ public class Parser<Type> {
 				e.printStackTrace();
 			}
 		});
+
 		return objectMapper.readValue(new Gson().toJson(parsedComponent), Object.class);
 	}
 
-	private <Attribute> Attribute parseAttributes(Map<String, Object> attributes, String id, Class<Attribute> attributeClass) throws JsonProcessingException {
+	private <Attribute> Attribute parseAttributes(Map<String, Object> attributes, Class<Attribute> attributeClass) throws JsonProcessingException {
 		Map<String, Object> parsedAttributes = new HashMap<>();
-		parsedAttributes.put("id", id);
-		attributes.forEach((key, value) -> {
-			try {
-				if(Arrays.stream(attributeClass.getDeclaredFields()).anyMatch(field -> field.getName().equals(key))) {
-					Field field = attributeClass.getDeclaredField(key);
 
-					parsedAttributes.put(key, parseField(value, field));
-				}
+		Arrays.stream(attributeClass.getDeclaredFields()).forEach(field -> {
+			String fieldKey = annotationProcessor.getAlias(field).isEmpty() ? field.getName() : annotationProcessor.getAlias(field);
+			try {
+				parsedAttributes.put(field.getName(), parseField(attributes.get(fieldKey), field));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -166,10 +196,10 @@ public class Parser<Type> {
 		return objectMapper.readValue(new Gson().toJson(parsedAttributes), attributeClass);
 	}
 
-	public List<Type> parseCollection(List<Map<String, Object>> data) {
+	public List<Type> parseCollection(List<Data> data) {
 		return data.stream().map(datum -> {
 			try {
-				return parseAttributes((Map<String, Object>) datum.get("attributes"), "1", clazz);
+				return parseAttributes(datum.getAttributes(), clazz);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -177,9 +207,9 @@ public class Parser<Type> {
 		}).collect(Collectors.toList());
 	}
 
-	public Type parseSingle(Map<String, Object> data) {
+	public Type parseSingle(Data data) {
 		try {
-			return parseAttributes((Map<String, Object>) data.get("attributes"), "1", clazz);
+			return parseAttributes(data.getAttributes(), clazz);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}

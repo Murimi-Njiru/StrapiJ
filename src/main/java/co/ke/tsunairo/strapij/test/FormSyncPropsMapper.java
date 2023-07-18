@@ -11,6 +11,6 @@ import java.util.List;
  */
 
 public class FormSyncPropsMapper {
-	@Attribute(field = PopulateFields.RELATION, entry = PopulateEntries.LIST)
+	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
 	private List<Element> inputs;
 }

@@ -9,10 +9,13 @@ import com.google.gson.Gson;
 
 public class MainApplication {
 	public static void main(String []args) {
-		System.out.println("Helloo world");
+		System.out.println("StrapiJ");
+
+		//Test
 		StrapiJ<App> strapiJ = new StrapiJ<>(App.class, "https://tsunairo.com/web-ui-cms/api/");
 		StrapiQuery strapiQuery = new StrapiQuery();
-		strapiQuery.addPopulateToQuery("populate[frames][populate]", "panels.elements.syncProps.inputs.syncProps");
+		strapiQuery.addPopulateToQuery("populate[frames][populate][0]", "panels.elements.syncProps.inputs.syncProps");
+		strapiQuery.addPopulateToQuery("populate[theme][populate][1]", "theme");
 
 		strapiJ.getCollectionEntry("1", strapiQuery).blockingSubscribe(themes -> {
 			System.out.println(new Gson().toJson(themes));

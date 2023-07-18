@@ -7,24 +7,23 @@ import java.lang.reflect.Field;
  */
 
 public class AnnotationProcessor {
-	public String getField(Field field) throws Exception {
+	public PopulateFields getField(Field field) throws Exception {
 		String fieldType = "";
 		field.setAccessible(true);
 		if (field.isAnnotationPresent(Attribute.class)) {
-			fieldType = field.getAnnotation(Attribute.class).field().toString();
+			return field.getAnnotation(Attribute.class).field();
 		}
 
-		return fieldType;
+		return null;
 	}
 
-	public String getEntry(Field field) throws Exception {
-		String entryType = "";
+	public PopulateEntries getEntry(Field field) throws Exception {
 		field.setAccessible(true);
 		if (field.isAnnotationPresent(Attribute.class)) {
-			entryType = field.getAnnotation(Attribute.class).entry().toString();
+			return field.getAnnotation(Attribute.class).entry();
 		}
 
-		return entryType;
+		return null;
 	}
 
 	public String getContentApiId(Class<?> clazz) {
@@ -37,12 +36,22 @@ public class AnnotationProcessor {
 	}
 
 	public Class<?> getMapper(Field field) {
-		Class entryType = null;
+		Class<?> entryType = null;
 		field.setAccessible(true);
 		if (field.isAnnotationPresent(Attribute.class)) {
 			entryType = field.getAnnotation(Attribute.class).mapper();
 		}
 
 		return entryType;
+	}
+
+	public String getAlias(Field field) {
+		String alias = "";
+		field.setAccessible(true);
+		if (field.isAnnotationPresent(Attribute.class)) {
+			alias = field.getAnnotation(Attribute.class).alias();
+		}
+
+		return alias;
 	}
 }

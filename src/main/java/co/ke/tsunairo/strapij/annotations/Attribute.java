@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Attribute {
-	public PopulateFields field() default PopulateFields.RELATION;
-	public PopulateEntries entry() default PopulateEntries.LIST;
-	public Class<?> mapper() default Object.class;
+	PopulateFields field() default PopulateFields.NONE;
+	PopulateEntries entry() default PopulateEntries.NONE;
+	Class<?> mapper() default Object.class;
+	String alias() default "";
 
 }

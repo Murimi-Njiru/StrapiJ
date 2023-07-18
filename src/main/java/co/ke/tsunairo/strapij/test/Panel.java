@@ -16,11 +16,12 @@ import java.util.Map;
 @Content(apiId = "panels")
 public @Data class Panel
 {
+	@Attribute(alias = "panelId")
 	private String id;
 	private String label;
-	@Attribute(field = PopulateFields.RELATION, entry = PopulateEntries.LIST)
+	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
 	private List<Element> elements;
-	@Attribute(field = PopulateFields.RELATION, entry = PopulateEntries.LIST)
+	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
 	private List<Panel> panels;
 	private int index;
 	private String type;

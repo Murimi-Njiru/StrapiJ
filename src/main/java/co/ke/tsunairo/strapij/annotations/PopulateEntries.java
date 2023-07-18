@@ -5,5 +5,5 @@ package co.ke.tsunairo.strapij.annotations;
  */
 
 public enum PopulateEntries {
-	LIST, SINGLE
+	LIST, SINGLE, NONE
 }

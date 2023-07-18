@@ -14,6 +14,7 @@ import java.util.Map;
 
 @Content(apiId = "elements")
 public @Data class Element {
+	@Attribute(alias = "elementId")
 	private String id;
 	private String name;
 	private String label;

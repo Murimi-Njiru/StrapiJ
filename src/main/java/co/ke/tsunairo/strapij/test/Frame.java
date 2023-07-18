@@ -16,11 +16,12 @@ import java.util.Map;
 @Content(apiId = "frames")
 public @Data class Frame
 {
+	@Attribute(alias = "frameId")
 	private String id;
 	private String label;
 	private List<String> navStart;
 	private List<String> navEnd;
-	@Attribute(field = PopulateFields.RELATION, entry = PopulateEntries.LIST)
+	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
 	private List<Panel> panels;
 	private String type;
 	private Map<String, Object> meta;
