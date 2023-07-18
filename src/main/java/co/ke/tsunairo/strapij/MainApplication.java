@@ -17,7 +17,7 @@ public class MainApplication {
 		strapiQuery.addPopulateToQuery("populate[frames][populate][0]", "panels.elements.syncProps.inputs.syncProps");
 		strapiQuery.addPopulateToQuery("populate[theme][populate][1]", "theme");
 
-		strapiJ.getCollectionEntry("1", strapiQuery).blockingSubscribe(themes -> {
+		strapiJ.getCollectionEntries( strapiQuery).blockingSubscribe(themes -> {
 			System.out.println(new Gson().toJson(themes));
 		}, t -> {
 			t.printStackTrace();

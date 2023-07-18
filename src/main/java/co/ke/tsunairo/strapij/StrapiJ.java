@@ -37,11 +37,11 @@ public class StrapiJ<ContentType> {
 	}
 
 	public Observable<List<ContentType>> getCollectionEntries (StrapiQuery strapiQuery) {
-		if(singleTypeClient == null) {
-			initSingleTypeClient(url);
+		if(collectionTypeClient == null) {
+			initCollectionTypeClient(url);
 		}
 		return collectionTypeClient.getEntries(annotationProcessor.getContentApiId(contentTypeClass), strapiQuery.getQuery())
-				.map(entriesResponse -> parser.parseCollection(entriesResponse.getData()));
+				.map(entries -> parser.parseCollection(entries.getData()));
 	}
 
 	public Observable<ContentType> getCollectionEntry (String id, StrapiQuery strapiQuery) {
@@ -49,6 +49,15 @@ public class StrapiJ<ContentType> {
 			initCollectionTypeClient(url);
 		}
 		return collectionTypeClient.getEntry(annotationProcessor.getContentApiId(contentTypeClass), id, strapiQuery.getQuery())
-				.map(entryResponse -> parser.parseSingle(entryResponse.getData()));
+				.map(entry -> parser.parseSingle(entry.getData()));
+	}
+
+	public Observable<ContentType> getSingleEntry(StrapiQuery strapiQuery) {
+		if(singleTypeClient == null) {
+			initSingleTypeClient(url);
+		}
+
+		return singleTypeClient.getSingleEntry(annotationProcessor.getContentApiId(contentTypeClass), strapiQuery.getQuery())
+				.map(entry -> parser.parseSingle(entry.getData()));
 	}
 }
