@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 public @interface Attribute {
 	PopulateFields field() default PopulateFields.NONE;
 	PopulateEntries entry() default PopulateEntries.NONE;
-	Class<?> mapper() default Object.class;
+	Class<?> componentMapper() default Object.class;
+	Class<?>[] dynamicZoneMappers() default {};
 	String alias() default "";
-
 }

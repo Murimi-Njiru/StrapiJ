@@ -35,14 +35,24 @@ public class AnnotationProcessor {
 		return apiId;
 	}
 
-	public Class<?> getMapper(Field field) {
-		Class<?> entryType = null;
+	public Class<?> getComponentMapper(Field field) {
+		Class<?> clazz = null;
 		field.setAccessible(true);
 		if (field.isAnnotationPresent(Attribute.class)) {
-			entryType = field.getAnnotation(Attribute.class).mapper();
+			clazz = field.getAnnotation(Attribute.class).componentMapper();
 		}
 
-		return entryType;
+		return clazz;
+	}
+
+	public Class<?>[] getDynamicZoneMappers(Field field) {
+		Class<?>[] clazzes = null;
+		field.setAccessible(true);
+		if (field.isAnnotationPresent(Attribute.class)) {
+			clazzes = field.getAnnotation(Attribute.class).dynamicZoneMappers();
+		}
+
+		return clazzes;
 	}
 
 	public String getAlias(Field field) {
@@ -53,5 +63,14 @@ public class AnnotationProcessor {
 		}
 
 		return alias;
+	}
+
+	public String getComponentName(Class<?> clazz) {
+		String name = "";
+		if (clazz.isAnnotationPresent(ComponentMapper.class)) {
+			name = clazz.getAnnotation(ComponentMapper.class).name();
+		}
+
+		return name;
 	}
 }

@@ -35,6 +35,7 @@ public class Parser<Type> {
 				case MEDIA, COMPONENT -> parseComponent(value, field);
 				case DYNAMIC_ZONE -> parseDynamicZone(value, field);
 				case RELATION_MANY -> parseRelation(value, field);
+				case SUB_COMPONENT -> parseSubComponent(value, field);
 				case RELATION_ONE -> parseSingleRelation(value, field);
 				case NONE -> (FieldClass) value;
 			};
@@ -45,22 +46,23 @@ public class Parser<Type> {
 	}
 
 	private <Component> Component parseComponent(Object value, Field field) throws Exception {
+
 		switch (annotationProcessor.getEntry(field)) {
 			case LIST -> {
 				List<Map<String, Object>> components = (List<Map<String, Object>>) value;
 
 				return (Component) components.stream().map(component -> {
 					try {
-						return mapComponent(component, annotationProcessor.getMapper(field));
+						return mapComponent(component, new Class<?>[] {annotationProcessor.getComponentMapper(field)});
 					} catch (JsonProcessingException e) {
 						e.printStackTrace();
 					}
 					return null;
-				});
+				}).collect(Collectors.toList());
 			}
 			case SINGLE -> {
 				Map<String, Object> component = (Map<String, Object>) value;
-				return (Component) mapComponent(component, annotationProcessor.getMapper(field));
+				return (Component) mapComponent(component, new Class<?>[] {annotationProcessor.getComponentMapper(field)});
 			}
 			case NONE -> {
 				return (Component) value;
@@ -75,7 +77,7 @@ public class Parser<Type> {
 			case LIST -> {
 				return (DynamicZone) components.stream().map(component -> {
 					try {
-						return mapComponent(component,  annotationProcessor.getMapper(field));
+						return mapComponent(component,  annotationProcessor.getDynamicZoneMappers(field));
 					} catch (JsonProcessingException e) {
 						e.printStackTrace();
 					}
@@ -83,7 +85,7 @@ public class Parser<Type> {
 				});
 			}
 			case SINGLE -> {
-				return (DynamicZone) mapComponent(components.get(0), annotationProcessor.getMapper(field));
+				return (DynamicZone) mapComponent(components.get(0), annotationProcessor.getDynamicZoneMappers(field));
 			}
 		}
 		return null;
@@ -156,27 +158,57 @@ public class Parser<Type> {
 	    return null;
     }
 
-	private Object mapComponent(Map<String, Object> component, Class mapper) throws JsonProcessingException {
+	private <SubComponent> SubComponent parseSubComponent(Object value, Field field) throws Exception {
+		switch (annotationProcessor.getEntry(field)) {
+			case LIST -> {
+				List<Map<String, Object>> components = (List<Map<String, Object>>) value;
+				return (SubComponent)components.stream().map(component -> {
+					try {
+						return parseAttributes(component, getFieldParameterizedClass(field));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return null;
+				}).collect(Collectors.toList());
+			}
+			case SINGLE -> {
+				Map<String, Object> component = (Map<String, Object>) value;
+
+				return (SubComponent)parseAttributes(component, field.getClass());
+			}
+		}
+		return null;
+	}
+
+	private Object mapComponent(Map<String, Object> component, Class<?>[] mappers) throws JsonProcessingException {
 		String [] unwantedKeys = {"id", "__component"};
-		Arrays.stream(unwantedKeys).forEach(component::remove);
 		Map<String, Object> parsedComponent = new HashMap<>();
 
-		component.forEach((key, value) -> {
-			try {
-				if(mapper != null) {
-					if(Arrays.stream(mapper.getDeclaredFields()).anyMatch(field -> field.getName().equals(key))) {
-						Field field = mapper.getDeclaredField(key);
+		try {
+			String componentName = (String) component.get("__component");
 
-						parsedComponent.put(key, parseField(value, field));
+			Class<?> mapper = Arrays.stream(mappers).filter(mapp -> componentName.equals(annotationProcessor.getComponentName(mapp))).findFirst().orElse(null);
+			component.forEach((key, value) -> {
+				try {
+					if(mapper != null) {
+						if(Arrays.stream(mapper.getDeclaredFields()).anyMatch(field -> field.getName().equals(key))) {
+							Field field = mapper.getDeclaredField(key);
+
+							parsedComponent.put(key, parseField(value, field));
+						}
 					}
+					else {
+						parsedComponent.put(key, value);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				else {
-					parsedComponent.put(key, value);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Arrays.stream(unwantedKeys).forEach(component::remove);
 
 		return objectMapper.readValue(new Gson().toJson(parsedComponent), Object.class);
 	}

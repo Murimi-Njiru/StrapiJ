@@ -19,7 +19,7 @@ public @Data class App {
 	private String name;
 	private String version;
 	private String description;
-	private String logo;
+//	private String logo;
 	private String domain;
 	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
 	private List<Frame> frames;
