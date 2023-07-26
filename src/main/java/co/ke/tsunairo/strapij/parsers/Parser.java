@@ -91,7 +91,7 @@ public class Parser<Type> {
 					try {
 						Map<String, Object> attributes = (Map<String, Object>) datum.get("attributes");
 						String url = (String) attributes.get("url");
-						String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl : annotationProcessor.getMediaHost(field);
+						String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl.substring(0, hostUrl.length()-1) : annotationProcessor.getMediaHost(field);
 						attributes.put("url", host + url);
 						return parseAttributes(attributes, getFieldParameterizedClass(field));
 					} catch (JsonProcessingException e) {
@@ -106,7 +106,7 @@ public class Parser<Type> {
 
 				Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
 				String url = (String) attributes.get("url");
-				String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl : annotationProcessor.getMediaHost(field);
+				String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl.substring(0, hostUrl.length()-1) : annotationProcessor.getMediaHost(field);
 
 				attributes.put("url", host + url);
 				return (Media) parseAttributes(attributes, field.getType());
