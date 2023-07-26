@@ -1,6 +1,7 @@
 package co.ke.tsunairo.strapij;
 
 import co.ke.tsunairo.strapij.test.App;
+import co.ke.tsunairo.strapij.test.Manifest;
 import com.google.gson.Gson;
 
 /**
@@ -12,16 +13,14 @@ public class MainApplication {
 		System.out.println("StrapiJ");
 
 		//Test
-		StrapiJ<App> strapiJ = new StrapiJ<>(App.class, "https://tsunairo.com/web-ui-cms/api/");
-		StrapiQuery strapiQuery = new StrapiQuery();
-//		strapiQuery.addPopulateToQuery("populate[frames][populate][0]", "panels.elements.syncProps.inputs.syncProps");
-//		strapiQuery.addPopulateToQuery("populate[theme][populate][1]", "theme");
-		strapiQuery.addPopulateToQuery("populate", "deep, 7");
-
-		strapiJ.getCollectionEntries(strapiQuery).blockingSubscribe(themes -> {
-			System.out.println(new Gson().toJson(themes));
-		}, t -> {
-			t.printStackTrace();
-		});
+//		StrapiJ<App> strapiJ = new StrapiJ<>(App.class, "https://tsunairo.com/web-ui-cms/");
+//		StrapiQuery strapiQuery = new StrapiQuery();
+//		strapiQuery.addPopulateToQuery("populate", "deep, 7");
+//
+//		strapiJ.getCollectionEntries(strapiQuery).blockingSubscribe(themes -> {
+//			System.out.println(new Gson().toJson(themes));
+//		}, t -> {
+//			t.printStackTrace();
+//		});
 	}
 }

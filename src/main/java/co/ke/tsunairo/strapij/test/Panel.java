@@ -1,9 +1,6 @@
 package co.ke.tsunairo.strapij.test;
 
-import co.ke.tsunairo.strapij.annotations.Attribute;
-import co.ke.tsunairo.strapij.annotations.Content;
-import co.ke.tsunairo.strapij.annotations.PopulateEntries;
-import co.ke.tsunairo.strapij.annotations.PopulateFields;
+import co.ke.tsunairo.strapij.annotations.*;
 import lombok.Data;
 
 import java.util.List;
@@ -19,9 +16,9 @@ public @Data class Panel
 	@Attribute(alias = "panelId")
 	private String id;
 	private String label;
-	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
+	@Relation
 	private List<Element> elements;
-	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
+	@Relation
 	private List<Panel> panels;
 	private int index;
 	private String type;

@@ -1,9 +1,7 @@
 package co.ke.tsunairo.strapij.test;
 
-import co.ke.tsunairo.strapij.annotations.Content;
-import co.ke.tsunairo.strapij.annotations.Attribute;
-import co.ke.tsunairo.strapij.annotations.PopulateEntries;
-import co.ke.tsunairo.strapij.annotations.PopulateFields;
+import co.ke.tsunairo.strapij.annotations.*;
+import co.ke.tsunairo.strapij.test.beans.Image;
 import lombok.Data;
 
 import java.util.List;
@@ -19,10 +17,11 @@ public @Data class App {
 	private String name;
 	private String version;
 	private String description;
-//	private String logo;
+	@Media
+	private Image logo;
 	private String domain;
-	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
+	@Relation
 	private List<Frame> frames;
-	@Attribute(field = PopulateFields.RELATION_ONE)
+	@Relation
 	private Theme theme;
 }

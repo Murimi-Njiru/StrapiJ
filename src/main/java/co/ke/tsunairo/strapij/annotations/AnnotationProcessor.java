@@ -7,24 +7,6 @@ import java.lang.reflect.Field;
  */
 
 public class AnnotationProcessor {
-	public PopulateFields getField(Field field) throws Exception {
-		String fieldType = "";
-		field.setAccessible(true);
-		if (field.isAnnotationPresent(Attribute.class)) {
-			return field.getAnnotation(Attribute.class).field();
-		}
-
-		return null;
-	}
-
-	public PopulateEntries getEntry(Field field) throws Exception {
-		field.setAccessible(true);
-		if (field.isAnnotationPresent(Attribute.class)) {
-			return field.getAnnotation(Attribute.class).entry();
-		}
-
-		return null;
-	}
 
 	public String getContentApiId(Class<?> clazz) {
 		String apiId = "";
@@ -35,11 +17,20 @@ public class AnnotationProcessor {
 		return apiId;
 	}
 
+	public PopulateEntries getEntries(Field field) throws Exception {
+		field.setAccessible(true);
+		if (field.isAnnotationPresent(Attribute.class)) {
+			return field.getAnnotation(Attribute.class).entries();
+		}
+
+		return null;
+	}
+
 	public Class<?> getComponentMapper(Field field) {
 		Class<?> clazz = null;
 		field.setAccessible(true);
-		if (field.isAnnotationPresent(Attribute.class)) {
-			clazz = field.getAnnotation(Attribute.class).componentMapper();
+		if (field.isAnnotationPresent(Component.class)) {
+			clazz = field.getAnnotation(Component.class).mapper();
 		}
 
 		return clazz;
@@ -48,8 +39,8 @@ public class AnnotationProcessor {
 	public Class<?>[] getDynamicZoneMappers(Field field) {
 		Class<?>[] clazzes = null;
 		field.setAccessible(true);
-		if (field.isAnnotationPresent(Attribute.class)) {
-			clazzes = field.getAnnotation(Attribute.class).dynamicZoneMappers();
+		if (field.isAnnotationPresent(DynamicZone.class)) {
+			clazzes = field.getAnnotation(DynamicZone.class).mappers();
 		}
 
 		return clazzes;
@@ -63,6 +54,37 @@ public class AnnotationProcessor {
 		}
 
 		return alias;
+	}
+
+	public String getMediaHost(Field field) {
+		String host = "";
+		field.setAccessible(true);
+		if (field.isAnnotationPresent(Media.class)) {
+			host = field.getAnnotation(Media.class).host();
+		}
+
+		return host;
+	}
+
+	public String getFieldType(Field field) {
+		if (field.isAnnotationPresent(Relation.class)) {
+			return "relation";
+		}
+		else if (field.isAnnotationPresent(Component.class)) {
+			return "component";
+		}
+		else if (field.isAnnotationPresent(DynamicZone.class)) {
+			return "dynamic_zone";
+		}
+		else if (field.isAnnotationPresent(Media.class)) {
+			return "media";
+		}
+		else if (field.isAnnotationPresent(SubComponent.class)) {
+			return "sub_component";
+		}
+		else {
+			return null;
+		}
 	}
 
 	public String getComponentName(Class<?> clazz) {

@@ -12,19 +12,19 @@ import java.util.Map;
  */
 
 public interface CollectionTypeClient {
-	@GET("{pluralApiId}")
+	@GET("api/{pluralApiId}")
 	Observable<Entries> getEntries(@Path("pluralApiId") String pluralApiId, @QueryMap(encoded=true) Map<String,String> queryMap);
 
-	@GET("{pluralApiId}/{documentId}")
+	@GET("api/{pluralApiId}/{documentId}")
 	Observable<Entry> getEntry(@Path("pluralApiId") String pluralApiId, @Path("documentId") String documentId, @QueryMap Map<String,String> queryMap);
 
-	@PUT("{pluralApiId}/{documentId}")
+	@PUT("api/{pluralApiId}/{documentId}")
 	Observable<Entry> updateEntry(@Path("pluralApiId") String pluralApiId, @Path("documentId") String documentId, @QueryMap Map<String,String> queryMap);
 
-	@POST("{pluralApiId}/{documentId}")
+	@POST("api/{pluralApiId}/{documentId}")
 	Observable<Entry> createEntry(@Path("pluralApiId") String pluralApiId, @Path("documentId") String documentId, @QueryMap Map<String,String> queryMap);
 
-	@DELETE("{pluralApiId}/{documentId}")
+	@DELETE("api/{pluralApiId}/{documentId}")
 	Observable<Entry> deleteEntry(@Path("pluralApiId") String pluralApiId, @Path("documentId") String documentId, @QueryMap Map<String,String> queryMap);
 
 }

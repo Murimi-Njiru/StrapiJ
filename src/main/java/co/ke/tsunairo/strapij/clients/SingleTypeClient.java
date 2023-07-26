@@ -11,12 +11,12 @@ import java.util.Map;
  */
 
 public interface SingleTypeClient {
-	@GET("{singularApiId}")
+	@GET("api/{singularApiId}")
 	Observable<Entry> getSingleEntry(@Path("singularApiId") String singularApiId, @QueryMap Map<String,String> queryMap);
 
-	@PUT("{singularApiId}")
+	@PUT("api/{singularApiId}")
 	Observable<Entry> updateSingleEntry(@Path("singularApiId") String singularApiId, @QueryMap Map<String,String> queryMap);
 
-	@DELETE("{singularApiId}")
+	@DELETE("api/{singularApiId}")
 	Observable<Entry> deleteSingleEntry(@Path("singularApiId") String singularApiId, @QueryMap Map<String,String> queryMap);
 }

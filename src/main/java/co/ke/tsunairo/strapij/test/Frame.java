@@ -1,9 +1,6 @@
 package co.ke.tsunairo.strapij.test;
 
-import co.ke.tsunairo.strapij.annotations.Content;
-import co.ke.tsunairo.strapij.annotations.Attribute;
-import co.ke.tsunairo.strapij.annotations.PopulateEntries;
-import co.ke.tsunairo.strapij.annotations.PopulateFields;
+import co.ke.tsunairo.strapij.annotations.*;
 import lombok.Data;
 
 import java.util.List;
@@ -21,7 +18,7 @@ public @Data class Frame
 	private String label;
 	private List<String> navStart;
 	private List<String> navEnd;
-	@Attribute(field = PopulateFields.RELATION_MANY, entry = PopulateEntries.LIST)
+	@Relation
 	private List<Panel> panels;
 	private String type;
 	private Map<String, Object> meta;

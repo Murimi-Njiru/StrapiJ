@@ -24,7 +24,7 @@ public class StrapiJ<ContentType> {
 		this.contentTypeClass = contentTypeClass;
 		this.url = url;
 
-		this.parser = new Parser<>(contentTypeClass);
+		this.parser = new Parser<>(contentTypeClass, url);
 		this.annotationProcessor = new AnnotationProcessor();
 	}
 
