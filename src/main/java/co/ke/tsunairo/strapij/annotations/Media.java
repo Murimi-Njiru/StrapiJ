@@ -9,6 +9,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Media {
 	String host() default "";
-	MediaFormat format() default MediaFormat.NONE;
-	MediaFormat[] formats() default {};
 }

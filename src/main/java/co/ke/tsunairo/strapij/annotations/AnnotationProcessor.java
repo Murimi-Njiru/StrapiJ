@@ -17,15 +17,6 @@ public class AnnotationProcessor {
 		return apiId;
 	}
 
-	public PopulateEntries getEntries(Field field) throws Exception {
-		field.setAccessible(true);
-		if (field.isAnnotationPresent(Attribute.class)) {
-			return field.getAnnotation(Attribute.class).entries();
-		}
-
-		return null;
-	}
-
 	public Class<?> getComponentMapper(Field field) {
 		Class<?> clazz = null;
 		field.setAccessible(true);

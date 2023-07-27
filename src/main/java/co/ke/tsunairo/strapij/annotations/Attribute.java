@@ -9,5 +9,4 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE_USE, ElementType.FIELD})
 public @interface Attribute {
 	String alias() default "";
-	PopulateEntries entries() default PopulateEntries.LIST;
 }

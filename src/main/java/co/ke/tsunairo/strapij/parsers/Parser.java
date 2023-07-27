@@ -1,10 +1,7 @@
 package co.ke.tsunairo.strapij.parsers;
 
 import co.ke.tsunairo.strapij.annotations.AnnotationProcessor;
-import co.ke.tsunairo.strapij.annotations.PopulateEntries;
 import co.ke.tsunairo.strapij.beans.Data;
-import co.ke.tsunairo.strapij.beans.Entries;
-import co.ke.tsunairo.strapij.beans.Entry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
