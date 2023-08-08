@@ -21,7 +21,7 @@ public class StrapiQuery {
 	}
 
 	public Map<String, String> addFiltersToQuery (String field, String operator, String value) {
-		query.put("filters["+field+"]["+operator+"]", value);
+		query.put("filters"+field+"["+operator+"]", value);
 		return query;
 	}
 
