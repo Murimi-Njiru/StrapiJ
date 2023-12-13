@@ -29,7 +29,7 @@ public class Parser<Type> {
 	public List<Type> parseCollection(List<Data> data) {
 		return data.stream().map(datum -> {
 			try {
-				return parseAttributes(datum.getAttributes(), clazz);
+				return parseAttributes(datum.getAttributes(), datum.getId(), clazz);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -39,18 +39,19 @@ public class Parser<Type> {
 
 	public Type parseSingle(Data data) {
 		try {
-			return parseAttributes(data.getAttributes(), clazz);
+			return parseAttributes(data.getAttributes(), data.getId(), clazz);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private <Attribute> Attribute parseAttributes(Map<String, Object> attributes, Class<Attribute> attributeClass) throws JsonProcessingException {
+	private <Attribute> Attribute parseAttributes(Map<String, Object> attributes, String dataId,  Class<Attribute> attributeClass) throws JsonProcessingException {
 		Map<String, Object> parsedAttributes = new HashMap<>();
 
 		Arrays.stream(attributeClass.getDeclaredFields()).forEach(field -> {
 			String fieldKey = annotationProcessor.getAlias(field).isEmpty() ? field.getName() : annotationProcessor.getAlias(field);
+			fieldKey = annotationProcessor.useDataId(field) ? dataId : fieldKey;
 			try {
 				parsedAttributes.put(field.getName(), parseField(attributes.get(fieldKey), field));
 			} catch (Exception e) {
@@ -90,7 +91,7 @@ public class Parser<Type> {
 						String url = (String) attributes.get("url");
 						String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl.substring(0, hostUrl.length()-1) : annotationProcessor.getMediaHost(field);
 						attributes.put("url", host + url);
-						return parseAttributes(attributes, getFieldParameterizedClass(field));
+						return parseAttributes(attributes, "", getFieldParameterizedClass(field));
 					} catch (JsonProcessingException e) {
 						e.printStackTrace();
 					}
@@ -106,7 +107,7 @@ public class Parser<Type> {
 				String host = annotationProcessor.getMediaHost(field).isBlank() ? hostUrl.substring(0, hostUrl.length()-1) : annotationProcessor.getMediaHost(field);
 
 				attributes.put("url", host + url);
-				return (Media) parseAttributes(attributes, field.getType());
+				return (Media) parseAttributes(attributes, "", field.getType());
 			}
 		}
 		return null;
@@ -140,7 +141,7 @@ public class Parser<Type> {
 
 			    return (Relation) data.stream().map(datum -> {
 				    try {
-					    return parseAttributes((Map<String, Object>) datum.get("attributes"), getFieldParameterizedClass(field));
+					    return parseAttributes((Map<String, Object>) datum.get("attributes"), datum.get("id").toString(), getFieldParameterizedClass(field));
 				    } catch (JsonProcessingException e) {
 					    e.printStackTrace();
 				    }
@@ -151,7 +152,7 @@ public class Parser<Type> {
 			    Map<String, Object> valueMap = (Map<String, Object>) value;
 			    Map<Object, Object> data = (Map<Object, Object>) valueMap.get("data");
 
-			    return (Relation) parseAttributes((Map<String, Object>) data.get("attributes"), field.getType());
+			    return (Relation) parseAttributes((Map<String, Object>) data.get("attributes"), data.get("id").toString(), field.getType());
 		    }
 	    }
 		return null;
@@ -164,7 +165,7 @@ public class Parser<Type> {
 
 				return (Component) components.stream().map(component -> {
 					try {
-						return parseAttributes(component, getFieldParameterizedClass(field));
+						return parseAttributes(component, "", getFieldParameterizedClass(field));
 					} catch (JsonProcessingException e) {
 						e.printStackTrace();
 					}
@@ -173,7 +174,7 @@ public class Parser<Type> {
 			}
 			else {
 				Map<String, Object> component = (Map<String, Object>) value;
-				return (Component) parseAttributes(component, field.getType());
+				return (Component) parseAttributes(component, "", field.getType());
 			}
 		}
 		return null;
@@ -207,7 +208,7 @@ public class Parser<Type> {
 			e.printStackTrace();
 		}
 
-		Arrays.stream(unwantedKeys).forEach(component::remove);
+		Arrays.stream(unwantedKeys).forEach(parsedComponent::remove);
 
 		return objectMapper.readValue(new Gson().toJson(parsedComponent), Object.class);
 	}
@@ -218,7 +219,7 @@ public class Parser<Type> {
 				List<Map<String, Object>> components = (List<Map<String, Object>>) value;
 				return (SubComponent)components.stream().map(component -> {
 					try {
-						return parseAttributes(component, getFieldParameterizedClass(field));
+						return parseAttributes(component, "", getFieldParameterizedClass(field));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -228,7 +229,7 @@ public class Parser<Type> {
 			else {
 				Map<String, Object> component = (Map<String, Object>) value;
 
-				return (SubComponent)parseAttributes(component, field.getClass());
+				return (SubComponent)parseAttributes(component, "", field.getClass());
 			}
 		}
 		return null;

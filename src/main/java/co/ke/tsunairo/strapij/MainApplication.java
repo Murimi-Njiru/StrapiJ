@@ -5,6 +5,7 @@ package co.ke.tsunairo.strapij;
  */
 
 public class MainApplication {
+
 	public static void main(String []args) {
 		System.out.println("StrapiJ");
 	}

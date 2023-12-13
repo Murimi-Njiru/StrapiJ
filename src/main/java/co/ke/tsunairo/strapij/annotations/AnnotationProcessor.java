@@ -47,6 +47,15 @@ public class AnnotationProcessor {
 		return alias;
 	}
 
+	public boolean useDataId(Field field) {
+		field.setAccessible(true);
+		if (field.isAnnotationPresent(Attribute.class)) {
+			return field.getAnnotation(Attribute.class).dataId();
+		}
+
+		return false;
+	}
+
 	public String getMediaHost(Field field) {
 		String host = "";
 		field.setAccessible(true);
