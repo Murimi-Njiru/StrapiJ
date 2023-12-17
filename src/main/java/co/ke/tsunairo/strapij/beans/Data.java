@@ -7,6 +7,6 @@ import java.util.Map;
  */
 
 public @lombok.Data class Data {
-	private String id;
+	private int id;
 	private Map<String,Object> attributes;
 }

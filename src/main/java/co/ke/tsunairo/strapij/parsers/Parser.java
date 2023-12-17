@@ -29,7 +29,7 @@ public class Parser<Type> {
 	public List<Type> parseCollection(List<Data> data) {
 		return data.stream().map(datum -> {
 			try {
-				return parseAttributes(datum.getAttributes(), datum.getId(), clazz);
+				return parseAttributes(datum.getAttributes(), "" + datum.getId(), clazz);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -39,7 +39,7 @@ public class Parser<Type> {
 
 	public Type parseSingle(Data data) {
 		try {
-			return parseAttributes(data.getAttributes(), data.getId(), clazz);
+			return parseAttributes(data.getAttributes(), "" + data.getId(), clazz);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
@@ -51,9 +51,13 @@ public class Parser<Type> {
 
 		Arrays.stream(attributeClass.getDeclaredFields()).forEach(field -> {
 			String fieldKey = annotationProcessor.getAlias(field).isEmpty() ? field.getName() : annotationProcessor.getAlias(field);
-			fieldKey = annotationProcessor.useDataId(field) ? dataId : fieldKey;
 			try {
-				parsedAttributes.put(field.getName(), parseField(attributes.get(fieldKey), field));
+				if(annotationProcessor.useDataId(field)) {
+					parsedAttributes.put(field.getName(), dataId);
+				}
+				else {
+					parsedAttributes.put(field.getName(), parseField(attributes.get(fieldKey), field));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -116,19 +120,14 @@ public class Parser<Type> {
 	private <DynamicZone> DynamicZone parseDynamicZone(Object value, Field field) throws Exception {
 		if(value != null) {
 			List<Map<String, Object>> components = (List<Map<String, Object>>) value;
-			if(isEntriesList(field)) {
-				return (DynamicZone) components.stream().map(component -> {
-					try {
-						return mapDynamicZoneComponent(component,  annotationProcessor.getDynamicZoneMappers(field));
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
-					return null;
-				});
-			}
-			else {
-				return (DynamicZone) mapDynamicZoneComponent(components.get(0), annotationProcessor.getDynamicZoneMappers(field));
-			}
+			return isEntriesList(field) ? (DynamicZone) components.stream().map(component -> {
+				try {
+					return mapDynamicZoneComponent(component,  annotationProcessor.getDynamicZoneMappers(field));
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}) : components.size() > 0 ? (DynamicZone) mapDynamicZoneComponent(components.get(0), annotationProcessor.getDynamicZoneMappers(field)) : null;
 		}
 		return null;
 	}

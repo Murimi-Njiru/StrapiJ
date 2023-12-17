@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 
 public class StrapiQuery {
-	private Map<String, String> query = new HashMap<String, String>();
+	private final Map<String, String> query = new HashMap<String, String>();
 
 	public Map<String, String> addSortToQuery () {
 		return query;

@@ -9,5 +9,10 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE_USE, ElementType.FIELD})
 public @interface Attribute {
 	String alias() default "";
-	boolean dataId() default false;
+	boolean useDataId() default false;
+	Class<?>[] dynamicZoneMappers() default {};
+	Class<?> componentMapper() default Class.class;
+	String mediaHost() default "";
+	boolean isRelation() default false;
+	boolean isSubComponent() default false;
 }

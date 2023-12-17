@@ -1,5 +1,6 @@
 package co.ke.tsunairo.strapij.annotations;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 /**
@@ -50,7 +51,7 @@ public class AnnotationProcessor {
 	public boolean useDataId(Field field) {
 		field.setAccessible(true);
 		if (field.isAnnotationPresent(Attribute.class)) {
-			return field.getAnnotation(Attribute.class).dataId();
+			return field.getAnnotation(Attribute.class).useDataId();
 		}
 
 		return false;
